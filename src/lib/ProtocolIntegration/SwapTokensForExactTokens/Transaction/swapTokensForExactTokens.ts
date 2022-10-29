@@ -9,7 +9,7 @@ import {ISwapTokensForExactTokensTransactionModel} from "../Model/SwapTokensForE
 dotenv.config();
 
 //Accessing UniswapV3Router contract's ABI
-const UniswapV2Router02ABI = require('../../../abi/');
+const UniswapV2Router02ABI = require('../../../abi/UniswapV2Router02ABI.json');
 let receiptPromise: Promise<TransactionReceipt>;
 
 
@@ -17,9 +17,9 @@ export const SwapTokensForExactTokensAsync = async(swapTokensForExactTokensDataM
 
   // Object creation of Assets
   // Setting up Ethereum blockchain Node through Infura
-  const web3 = new Web3(process.env.infuraUrl);
+  const web3 = new Web3(process.env.infuraUrlRinkeby!);
   //Providing Private Key
-  const activeAccount = web3.eth.accounts.privateKeyToAccount(process.env.PRIVATE_KEY);
+  const activeAccount = web3.eth.accounts.privateKeyToAccount(process.env.PRIVATE_KEY!);
   
   // Initialising the Uniswap Router Contract
   const uniswapV2Router02Contract = new web3.eth.Contract(UniswapV2Router02ABI as AbiItem[], process.env.UniswapV2RinkebyRouter02Address);
@@ -36,13 +36,13 @@ export const SwapTokensForExactTokensAsync = async(swapTokensForExactTokensDataM
 
   console.log("In Token: ",swapTokensForExactTokensDataModel.TokenIn);
   
-  const amountsInMax = web3.utils.toWei(swapTokensForExactTokensDataModel.AmountIn?.toString());
+  const amountsInMax = web3.utils.toWei(swapTokensForExactTokensDataModel.AmountIn?.toString()!);
   console.log("Amount In Max: ", amountsInMax);
 
   console.log("Amounts In : ", swapTokensForExactTokensDataModel.AmountIn);
 
   //get Token Out amount
-  const ethOut = await uniswapV2Router02Contract.methods.getAmountsOut(web3.utils.toWei(swapTokensForExactTokensDataModel.AmountIn?.toString()), [swapTokensForExactTokensDataModel.TokenIn,WETH_ADDRESS]).call();
+  const ethOut = await uniswapV2Router02Contract.methods.getAmountsOut(web3.utils.toWei(swapTokensForExactTokensDataModel.AmountIn?.toString()!), [swapTokensForExactTokensDataModel.TokenIn,WETH_ADDRESS]).call();
   console.log("Eth Out:", ethOut[1]);
 
   console.log("Out Address:", swapTokensForExactTokensDataModel.TokenOut);
@@ -100,7 +100,7 @@ export const SwapTokensForExactTokensAsync = async(swapTokensForExactTokensDataM
             console.log(error);
             reject(error);
           } else {
-            web3.eth.sendSignedTransaction(signedTx.rawTransaction).on('receipt', (receipt) => {
+            web3.eth.sendSignedTransaction(signedTx.rawTransaction!).on('receipt', (receipt) => {
               console.log("Receipt : ",receipt);
               receiptObj=receipt;
 
